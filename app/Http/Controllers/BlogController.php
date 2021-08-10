@@ -62,20 +62,20 @@ class BlogController extends Controller
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput($request->all());
+        } else {
+            $imageName = time() . '.' . $request->image->extension();
+            $path = Storage::putFileAs('public/photoblogs', $request->image, $imageName);
+
+            $blog = Blog::create([
+                'image' => $imageName,
+                'title' => $request->title,
+                'content' => $request->content,
+            ]);
+
+            $request->image->move($path, $imageName);
+
+            return redirect()->route('blog.index')->with('success', 'Blogs created successfully.');
         }
-
-        $imageName = time() . '.' . $request->image->extension();
-        $path = Storage::putFileAs('public/photoblogs', $request->image, $imageName);
-
-        $blog = Blog::create([
-            'image' => $imageName,
-            'title' => $request->title,
-            'content' => $request->content,
-        ]);
-
-        // $request->image->move($path, $imageName);
-
-        return redirect()->route('blog.index')->with('success', 'Blogs created successfully.');
     }
 
     /**
@@ -107,11 +107,35 @@ class BlogController extends Controller
      * @param  \App\Models\Blog  $blog
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Blog $blog)
+    public function update(Request $request, $id)
     {
-        // if (!empty($user->photo) && file_exists($path . '/' . $user->photo)) {
-        //     unlink($path . '/' . $user->photo);
-        // };
+
+        if ($request->image) {
+            $blog = Blog::find($id);
+            // membuat nama file
+            $imageName = time() . '.' . $request->image->extension();
+            // menentukan path
+            $path = Storage::path('public/photoblogs');
+            // kondisi jika imgae sudah ada maka hapus image tersebut
+            if (!empty($blog->image) && file_exists($path . '/' . $blog->image)) {
+                unlink($path . '/' . $blog->image);
+            };
+            // update
+            $blog = Blog::where('id', $id)->update([
+                'image' => $imageName,
+                'title' => $request->title,
+                'content' => $request->content,
+            ]);
+            // pindah image ke path
+            $request->image->move($path, $imageName);
+        } else {
+            $blog = Blog::where('id', $id)->update([
+                'title' => $request->title,
+                'content' => $request->content,
+            ]);
+        }
+
+        return redirect()->route('blog.index')->with('success', 'Data berhasil Di Update');
     }
 
     /**
@@ -122,6 +146,10 @@ class BlogController extends Controller
      */
     public function destroy(Blog $blog)
     {
-        //
+        $blog->delete();
+        $path = Storage::path('public/photoblogs');
+        unlink($path . '/' . $blog->image);
+
+        return redirect()->route('blog.index')->with('success', 'Data berhasil Di Dihapus');
     }
 }

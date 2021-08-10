@@ -25,15 +25,16 @@
                         <div class="col-md-8">
                             <div class="card-body">
                                 <h4 class="card-title text-capitalize font-weight-bold">{{ $blog->title }}</h4>
-                                <p class="card-text overflow-auto" style="height: 150px">{!! $blog->content !!}
-                                </p>
+                                <div class="overflow-auto" style="height: 120px">
+                                    <p class="card-text">{!! $blog->content !!}
+                                    </p>
+                                </div>
                             </div>
                             <div class="text-right">
                                 <form onsubmit="return confirm('Apakah Anda Yakin ?');"
                                     action="{{ route('blog.destroy', $blog->id) }}" method="POST">
                                     <a href="{{ route('blog.edit', $blog->id) }}"
                                         class="btn btn-sm btn-primary">Edit</a>
-
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-danger">X</button>
