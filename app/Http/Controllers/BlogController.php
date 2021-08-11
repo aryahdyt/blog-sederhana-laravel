@@ -16,15 +16,7 @@ class BlogController extends Controller
      */
     public function index()
     {
-        // memanggil Model Blog kemudian 
-        // mengurutkan datanya berdasarkan terbaru dengan method latest() dan 
-        // membatasi data yang ditampilkan sejumlah 10 data perhalaman
-        $blogs = Blog::latest()->paginate(10);
-
-        // memanggil sebuah view dengan nama index.blade.php di dalam folder blog
-        // yang mana folder tersebut berada di dalam folder resources/views/.
-        // Dan kita mengoper data tersebut ke dalam view menggunakan helper compact
-        return view('blog.index', compact('blogs'));
+        return view('blog.index', ['blogs' => Blog::latest()->paginate(10)]);
     }
 
     /**
@@ -63,16 +55,22 @@ class BlogController extends Controller
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput($request->all());
         } else {
-            $imageName = time() . '.' . $request->image->extension();
-            $path = Storage::putFileAs('public/photoblogs', $request->image, $imageName);
+            if ($request->image) {
+                $imageName = time() . '.' . $request->image->extension();
+                $path = Storage::putFileAs('public/photoblogs', $request->image, $imageName);
 
-            $blog = Blog::create([
-                'image' => $imageName,
-                'title' => $request->title,
-                'content' => $request->content,
-            ]);
-
-            $request->image->move($path, $imageName);
+                $blog = Blog::create([
+                    'image' => $imageName,
+                    'title' => $request->title,
+                    'content' => $request->content,
+                ]);
+                $request->image->move($path, $imageName);
+            } else {
+                $blog = Blog::create([
+                    'title' => $request->title,
+                    'content' => $request->content,
+                ]);
+            }
 
             return redirect()->route('blog.index')->with('success', 'Blogs created successfully.');
         }
@@ -107,11 +105,9 @@ class BlogController extends Controller
      * @param  \App\Models\Blog  $blog
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Blog $blog)
     {
-
         if ($request->image) {
-            $blog = Blog::find($id);
             // membuat nama file
             $imageName = time() . '.' . $request->image->extension();
             // menentukan path
@@ -121,7 +117,7 @@ class BlogController extends Controller
                 unlink($path . '/' . $blog->image);
             };
             // update
-            $blog = Blog::where('id', $id)->update([
+            $blog->update([
                 'image' => $imageName,
                 'title' => $request->title,
                 'content' => $request->content,
@@ -129,7 +125,7 @@ class BlogController extends Controller
             // pindah image ke path
             $request->image->move($path, $imageName);
         } else {
-            $blog = Blog::where('id', $id)->update([
+            $blog->update([
                 'title' => $request->title,
                 'content' => $request->content,
             ]);
