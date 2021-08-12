@@ -12,7 +12,7 @@
         <li>php artisan storage:link</li>
         <li>php artisan migrate:fresh --seed</li>
         <li>php artisan serve</li>
-        <li>Visit localhost:8000 in your browser</li>
+        <li>Visit localhost:8000/blog in your browser</li>
     </ol>
     <p>Thank You so much for your time !!!</p>
 </div>
