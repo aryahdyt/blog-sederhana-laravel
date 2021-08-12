@@ -142,9 +142,13 @@ class BlogController extends Controller
      */
     public function destroy(Blog $blog)
     {
-        $blog->delete();
-        $path = Storage::path('public/photoblogs');
-        unlink($path . '/' . $blog->image);
+        if ($blog->image) {
+            $blog->delete();
+            $path = Storage::path('public/photoblogs');
+            unlink($path . '/' . $blog->image);
+        } else {
+            $blog->delete();
+        }
 
         return redirect()->route('blog.index')->with('success', 'Data berhasil Di Dihapus');
     }
