@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,4 +18,18 @@ use Illuminate\Support\Facades\Route;
 //     return view('welcome');
 // });
 
-Route::resource('blog', BlogController::class);
+
+
+Auth::routes();
+
+Route::group(['middleware' => ['auth', 'CheckRole:admin,normal']], function () {
+    // dashboard
+    Route::get('/', DashboardController::class)->name('dashboard');
+    // blog
+    Route::resource('blog', BlogController::class);
+    Route::get('all-blogs', AllBlogController::class)->name('all-blogs');
+});
+Route::group(['middleware' => ['auth', 'CheckRole:admin']], function () {
+    // user
+    Route::resource('user', UserController::class);
+});

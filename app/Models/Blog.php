@@ -10,6 +10,11 @@ class Blog extends Model
     use HasFactory;
 
     protected $fillable = [
-        'image', 'title', 'content'
+        'user_id', 'image', 'title', 'content'
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

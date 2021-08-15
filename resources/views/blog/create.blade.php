@@ -1,4 +1,13 @@
-@extends('master')
+@extends('template.master')
+
+@section('title')
+Blog
+@endsection
+
+@section('page')
+<div class="breadcrumb-item"><a href="{{ route('blog.index') }}">Blog</a></div>
+<div class="breadcrumb-item active">Tambah</div>
+@endsection
 
 @section('content')
 <div class="row">

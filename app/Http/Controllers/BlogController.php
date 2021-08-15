@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Blog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -14,9 +15,10 @@ class BlogController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
     public function index()
     {
-        return view('blog.index', ['blogs' => Blog::latest()->paginate(10)]);
+        return view('blog.index', ['blogs' => Blog::where('user_id', Auth::user()->id)->latest()->paginate(10)]);
     }
 
     /**
@@ -60,13 +62,15 @@ class BlogController extends Controller
                 $path = Storage::putFileAs('public/photoblogs', $request->image, $imageName);
 
                 $blog = Blog::create([
+                    'user_id' => Auth::user()->id,
                     'image' => $imageName,
                     'title' => $request->title,
                     'content' => $request->content,
                 ]);
-                $request->image->move($path, $imageName);
+                // $request->image->move($path, $imageName);
             } else {
                 $blog = Blog::create([
+                    'user_id' => Auth::user()->id,
                     'title' => $request->title,
                     'content' => $request->content,
                 ]);

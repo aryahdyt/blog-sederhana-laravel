@@ -1,6 +1,7 @@
 {
     "/js/app.js": "/js/app.js",
     "/css/app.css": "/css/app.css",
+    "/css/toastr.css": "/css/toastr.css",
     "/node_modules/tinymce/jquery.tinymce.js": "/node_modules/tinymce/jquery.tinymce.js",
     "/node_modules/tinymce/jquery.tinymce.min.js": "/node_modules/tinymce/jquery.tinymce.min.js",
     "/node_modules/tinymce/tinymce.js": "/node_modules/tinymce/tinymce.js",
